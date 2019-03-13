@@ -1,6 +1,7 @@
 let idList = [];
 let usedCards = [];
 let cardValues = [];
+let clickedCards = [];
 let gridGen = false;
 function generateGrid() {
 	let p = document.getElementById("amount");
@@ -80,8 +81,12 @@ function assignValues(gridGen){
 
 function flipCard(){
 	let p = document.getElementById(this.id);
-	p.innerHTML = cardValues[usedCards[Number(p.id)]];
-	window.setTimeout(function reEmpty(){p.innerHTML=''}, 5000);
+	p.innerHTML = cardValues[usedCards[p.id]];
+	clickedCards.push(p.id);
+}
+
+function check(){
+	console.log(4);
 }
 /*function addElement(parentId, elementTag, elementId, html){
 	var p = document.getElementById(parentId);
