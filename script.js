@@ -28,6 +28,7 @@ function generateGrid() {
 		usedCards.length = 0;
 		cardValues.length = 0;
 		factors.length = 0;
+		clickedCards.length = 0;
 		for(let i=1; i<squares; i++){
 			if(squares%i===0){
 				factors.push(i);
@@ -79,14 +80,34 @@ function assignValues(gridGen){
 	}
 }
 
+
 function flipCard(){
 	let p = document.getElementById(this.id);
-	p.innerHTML = cardValues[usedCards[p.id]];
-	clickedCards.push(p.id);
+	if(clickedCards.length<2){
+		p.innerHTML = cardValues[usedCards[p.id]];
+		clickedCards.push(p.id);
+	}
+	check();
+	if(clickedCards.length === 2 && correct === false){
+		window.setTimeout(function(){
+			document.getElementById(clickedCards[0]).innerHTML = "";
+			document.getElementById(clickedCards[1]).innerHTML = "";
+			clickedCards.length = 0;}, 3000)
+	}
+	console.log("clickedCards", clickedCards);
 }
 
+
+let correct = false;
 function check(){
-	console.log(4);
+	if(cardValues[usedCards[Number(clickedCards[0])]]===cardValues[usedCards[Number(clickedCards[1])]]){
+		document.getElementById(clickedCards[0]).style.background = "#93ff93";
+		document.getElementById(clickedCards[1]).style.background = "#93ff93";
+		correct = true;
+		clickedCards.length = 0;
+	}else{
+		correct = false;
+	}
 }
 /*function addElement(parentId, elementTag, elementId, html){
 	var p = document.getElementById(parentId);
