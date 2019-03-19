@@ -83,16 +83,18 @@ function assignValues(gridGen){
 
 function flipCard(){
 	let p = document.getElementById(this.id);
-	if(clickedCards.length<2){
-		p.innerHTML = cardValues[usedCards[p.id]];
-		clickedCards.push(p.id);
-	}
-	check();
-	if(clickedCards.length === 2 && correct === false){
-		window.setTimeout(function(){
-			document.getElementById(clickedCards[0]).innerHTML = "";
-			document.getElementById(clickedCards[1]).innerHTML = "";
-			clickedCards.length = 0;}, 3000)
+	if(clickedCards.includes(Number(p.id))===false){
+		if(clickedCards.length<2){
+			p.innerHTML = cardValues[usedCards[p.id]];
+			clickedCards.push(p.id);
+		}
+		check();
+		if(clickedCards.length === 2 && correct === false){
+			window.setTimeout(function(){
+				document.getElementById(clickedCards[0]).innerHTML = "";
+				document.getElementById(clickedCards[1]).innerHTML = "";
+				clickedCards.length = 0;}, 2000)
+		}
 	}
 	console.log("clickedCards", clickedCards);
 }
@@ -100,7 +102,7 @@ function flipCard(){
 
 let correct = false;
 function check(){
-	if(cardValues[usedCards[Number(clickedCards[0])]]===cardValues[usedCards[Number(clickedCards[1])]]){
+	if(cardValues[usedCards[Number(clickedCards[0])]]===cardValues[usedCards[Number(clickedCards[1])]] && clickedCards[0]!==clickedCards[1]){
 		document.getElementById(clickedCards[0]).style.background = "#93ff93";
 		document.getElementById(clickedCards[1]).style.background = "#93ff93";
 		correct = true;
@@ -109,6 +111,7 @@ function check(){
 		correct = false;
 	}
 }
+
 /*function addElement(parentId, elementTag, elementId, html){
 	var p = document.getElementById(parentId);
 	var newElement = document.createElement(elementId);
