@@ -2,6 +2,7 @@ let idList = [];
 let usedCards = [];
 let cardValues = [];
 let clickedCards = [];
+let correctCards = [];
 let gridGen = false;
 function generateGrid() {
 	let p = document.getElementById("amount");
@@ -96,15 +97,19 @@ function flipCard(){
 				clickedCards.length = 0;}, 2000)
 		}
 	}
+	if(correctCards.length === idList.length){
+		document.write("<div id='endingMessage'>" + "You Won!" + "</div>" + "<div id='endingSubtitle'>" + "You successfully matched all the cards in " + 23 + " tries" + "</div>");
+	}
 	console.log("clickedCards", clickedCards);
 }
-
 
 let correct = false;
 function check(){
 	if(cardValues[usedCards[Number(clickedCards[0])]]===cardValues[usedCards[Number(clickedCards[1])]] && clickedCards[0]!==clickedCards[1]){
 		document.getElementById(clickedCards[0]).style.background = "#93ff93";
 		document.getElementById(clickedCards[1]).style.background = "#93ff93";
+		correctCards.push(clickedCards[0].id);
+		correctCards.push(clickedCards[1].id);
 		correct = true;
 		clickedCards.length = 0;
 	}else{
