@@ -4,7 +4,9 @@ let cardValues = [];
 let clickedCards = [];
 let correctCards = [];
 let gridGen = false;
+let clickCount = 0;
 function generateGrid() {
+	clickCount = 0;
 	let p = document.getElementById("amount");
 	let squares = Number(p.value);
 	if(squares>100){
@@ -83,6 +85,7 @@ function assignValues(gridGen){
 
 
 function flipCard(){
+	clickCount++;
 	let p = document.getElementById(this.id);
 	if(clickedCards.includes(Number(p.id))===false){
 		if(clickedCards.length<2){
@@ -98,7 +101,11 @@ function flipCard(){
 		}
 	}
 	if(correctCards.length === idList.length){
-		document.write("<div id='endingMessage'>" + "You Won!" + "</div>" + "<div id='endingSubtitle'>" + "You successfully matched all the cards in " + 23 + " tries" + "</div>");
+		document.write("<div style='width: 100%; height: 100vh; background: linear-gradient(#42f4a1, #4741f4);'>" +
+		"<div style='font-size: 20vw; text-align: center; width: 100%; margin: 0 auto; box-sizing: border-box;'>" +
+		"You Won!" + "</div>" + "<div style='text-align: center; width: 60%; font-size: 5vw; box-sizing: border-box; margin: 0 auto;'>" +
+		"You successfully matched all the cards in " + Math.round(clickCount/2) + " tries" + "</div>" + "<div style='box-sizing: border-box; width: 50%; margin: 0 auto; text-align: center;'>" +
+		"<button onclick='reload()' style='width: 200px; height: 100px; font-size: 40px'>" + "Restart" + "</button>" + "</div>" + "</div>");
 	}
 	console.log("clickedCards", clickedCards);
 }
@@ -117,6 +124,9 @@ function check(){
 	}
 }
 
+function reload(){
+	location.reload();
+}
 /*function addElement(parentId, elementTag, elementId, html){
 	var p = document.getElementById(parentId);
 	var newElement = document.createElement(elementId);
