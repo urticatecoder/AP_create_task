@@ -5,6 +5,7 @@ let clickedCards = [];
 let correctCards = [];
 let gridGen = false;
 let clickCount = 0;
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 function generateGrid() {
 	clickCount = 0;
 	let p = document.getElementById("amount");
@@ -61,7 +62,7 @@ function generateGrid() {
 	}
 	assignValues(gridGen);
 }
-
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 function assignValues(gridGen){
 	let squares = Number(document.getElementById("amount").value);
 	if(gridGen){
@@ -82,50 +83,89 @@ function assignValues(gridGen){
 		console.log("card values", cardValues);
 	}
 }
-
-
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+let attemptNumber=0;
 function flipCard(){
 	clickCount++;
 	let p = document.getElementById(this.id);
-	if(clickedCards.includes(Number(p.id))===false){
-		if(clickedCards.length<2){
-			p.innerHTML = cardValues[usedCards[p.id]];
-			clickedCards.push(p.id);
-		}
-		check();
-		if(clickedCards.length === 2 && correct === false){
-			window.setTimeout(function(){
-				document.getElementById(clickedCards[0]).innerHTML = "";
-				document.getElementById(clickedCards[1]).innerHTML = "";
-				clickedCards.length = 0;}, 2000)
+	if(clickedCards.length<2){
+		if(clickedCards.includes(Number(p.id))===false){
+			if(clickedCards.length<2){
+				p.innerHTML = cardValues[usedCards[p.id]];
+				clickedCards.push(p.id);
+			}
+			check();
+			if(clickedCards.length === 2 && correct === true){
+				document.getElementById(clickedCards[0]).style.background = "#93ff93";
+				document.getElementById(clickedCards[1]).style.background = "#93ff93";
+				correctCards.push(clickedCards[0].id);
+				correctCards.push(clickedCards[1].id);
+				clickedCards.length = 0;
+			}
+			if(clickedCards.length === 2 && correct === false){
+				window.setTimeout(function(){
+					document.getElementById(clickedCards[0]).innerHTML = "";
+					document.getElementById(clickedCards[1]).innerHTML = "";
+					clickedCards.length = 0;}, 2000)
+				}
 		}
 	}
 	if(correctCards.length === idList.length){
+		attemptNumber++;
+		storeCookie();
+		let priorAttempt = getLatestCookie();
+		console.log(priorAttempt);
+		if(priorAttempt/2>clickCount/2){
+			var percent = (((priorAttempt/2 - clickCount/2)/priorAttempt).toFixed(4))*100;
+			var change = "decrease";
+		}else{
+			var percent = (((clickCount/2-priorAttempt/2)/priorAttempt).toFixed(4))*100;
+			var change = "increase";
+		}
 		document.write("<div style='width: 100%; height: 100vh; background: linear-gradient(#42f4a1, #4741f4);'>" +
 		"<div style='font-size: 20vw; text-align: center; width: 100%; margin: 0 auto; box-sizing: border-box;'>" +
-		"You Won!" + "</div>" + "<div style='text-align: center; width: 60%; font-size: 5vw; box-sizing: border-box; margin: 0 auto;'>" +
-		"You successfully matched all the cards in " + Math.round(clickCount/2) + " tries" + "</div>" + "<div style='box-sizing: border-box; width: 50%; margin: 0 auto; text-align: center;'>" +
-		"<button onclick='reload()' style='width: 200px; height: 100px; font-size: 40px'>" + "Restart" + "</button>" + "</div>" + "</div>");
+			"You Won!" +
+		"</div>" +
+		"<div style='text-align: center; width: 60%; font-size: 5vw; box-sizing: border-box; margin: 0 auto;'>" +
+			"You successfully matched all the cards in " + Math.round(clickCount/2) + " tries" +
+		"</div>" +
+		"<div>" +
+			"Your previous attempt took you " + Math.round(priorAttempt/2) + " tries. That's a " +
+			percent + " percent " + change +
+		"</div>" +
+		"<div style='box-sizing: border-box; width: 50%; margin: 0 auto; text-align: center;'>" +
+			"<button onclick='reload()' style='width: 200px; height: 100px; font-size: 40px'>" +
+				"Restart" +
+			"</button>" +
+		"</div>" +
+		"</div>");
 	}
 	console.log("clickedCards", clickedCards);
 }
-
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 let correct = false;
 function check(){
 	if(cardValues[usedCards[Number(clickedCards[0])]]===cardValues[usedCards[Number(clickedCards[1])]] && clickedCards[0]!==clickedCards[1]){
-		document.getElementById(clickedCards[0]).style.background = "#93ff93";
-		document.getElementById(clickedCards[1]).style.background = "#93ff93";
-		correctCards.push(clickedCards[0].id);
-		correctCards.push(clickedCards[1].id);
 		correct = true;
-		clickedCards.length = 0;
 	}else{
 		correct = false;
 	}
 }
-
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 function reload(){
 	location.reload();
+}
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+function storeCookie(){
+	document.cookie = "lastAttempt=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;"
+	document.cookie = "lastAttempt=" + String(clickCount/2) + "; path=/;";
+}
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+function getLatestCookie(){
+	let previousAttempts = document.cookie;
+	console.log(previousAttempts);
+	let priorAttempt = previousAttempts.split("=")[1];
+	return priorAttempt;
 }
 /*function addElement(parentId, elementTag, elementId, html){
 	var p = document.getElementById(parentId);
