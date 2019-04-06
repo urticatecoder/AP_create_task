@@ -112,8 +112,8 @@ function flipCard(){
 	}
 	if(correctCards.length === idList.length){
 		attemptNumber++;
-		storeCookie();
 		let priorAttempt = getLatestCookie();
+		storeCookie();
 		console.log(priorAttempt);
 		if(priorAttempt/2>clickCount/2){
 			var percent = (((priorAttempt/2 - clickCount/2)/priorAttempt).toFixed(4))*100;
