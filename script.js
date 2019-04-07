@@ -3,6 +3,7 @@ let usedCards = [];
 let cardValues = [];
 let clickedCards = [];
 let correctCards = [];
+let previousAttempts = [];
 let gridGen = false;
 let clickCount = 0;
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -84,7 +85,6 @@ function assignValues(gridGen){
 	}
 }
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-let attemptNumber=0;
 function flipCard(){
 	clickCount++;
 	let p = document.getElementById(this.id);
@@ -94,6 +94,7 @@ function flipCard(){
 				p.innerHTML = cardValues[usedCards[p.id]];
 				clickedCards.push(p.id);
 			}
+			console.log(clickedCards)
 			check();
 			if(clickedCards.length === 2 && correct === true){
 				document.getElementById(clickedCards[0]).style.background = "#93ff93";
@@ -111,34 +112,57 @@ function flipCard(){
 		}
 	}
 	if(correctCards.length === idList.length){
-		attemptNumber++;
-		let priorAttempt = getLatestCookie();
-		storeCookie();
-		console.log(priorAttempt);
-		if(priorAttempt/2>clickCount/2){
-			var percent = (((priorAttempt/2 - clickCount/2)/priorAttempt).toFixed(4))*100;
-			var change = "decrease";
+		if(previousAttempts.length===0){
+			var percent = "";
+			var change = "";
 		}else{
-			var percent = (((clickCount/2-priorAttempt/2)/priorAttempt).toFixed(4))*100;
-			var change = "increase";
+			if(previousAttempts[previousAttempts.length-1]>clickCount/2){
+				var percentOverPrior = (((previousAttempts[previousAttempts.length-1] - clickCount/2)/previousAttempts[previousAttempts.length-1]).toFixed(4))*100;
+				var change = "decrease";
+			}else{
+				var percentOverPrior = (((clickCount/2-previousAttempts[previousAttempts.length-1])/previousAttempts[previousAttempts.length-1]).toFixed(4))*100;
+				var change = "increase";
+			}
 		}
-		document.write("<div style='width: 100%; height: 100vh; background: linear-gradient(#42f4a1, #4741f4);'>" +
-		"<div style='font-size: 20vw; text-align: center; width: 100%; margin: 0 auto; box-sizing: border-box;'>" +
-			"You Won!" +
-		"</div>" +
-		"<div style='text-align: center; width: 60%; font-size: 5vw; box-sizing: border-box; margin: 0 auto;'>" +
-			"You successfully matched all the cards in " + Math.round(clickCount/2) + " tries" +
-		"</div>" +
-		"<div>" +
-			"Your previous attempt took you " + Math.round(priorAttempt/2) + " tries. That's a " +
-			percent + " percent " + change +
-		"</div>" +
-		"<div style='box-sizing: border-box; width: 50%; margin: 0 auto; text-align: center;'>" +
-			"<button onclick='reload()' style='width: 200px; height: 100px; font-size: 40px'>" +
-				"Restart" +
-			"</button>" +
-		"</div>" +
-		"</div>");
+
+		let body = document.getElementsByTagName("body");
+		if(previousAttempts.length>0){
+			body[0].innerHTML = ("<div style='width: 100%; height: 100vh; background: linear-gradient(#42f4a1, #4741f4);'>" +
+			"<div style='font-size: 20vw; text-align: center; width: 100%; margin: 0 auto; box-sizing: border-box;'>" +
+				"You Won!" +
+			"</div>" +
+			"<div style='text-align: center; width: 60%; font-size: 5vw; box-sizing: border-box; margin: 0 auto;'>" +
+				"You successfully matched all the cards in " + Math.round(clickCount/2) + " tries" +
+			"</div>" +
+			"<div style='width: 100%; text-align: center;'>" +
+				"Your previous attempt took you " + Math.round(previousAttempts[previousAttempts.length-1]) + " tries. Your most recent attempt was a " +
+				percentOverPrior + " percent " + change + " from that." +
+			"</div>" +
+			"<div style='box-sizing: border-box; width: 50%; margin: 0 auto; text-align: center;'>" +
+				"<button onclick='putBack()' style='width: 200px; height: 100px; font-size: 40px'>" +
+					"Restart" +
+				"</button>" +
+			"</div>" +
+			"</div>");
+		}else{
+			body[0].innerHTML = ("<div style='width: 100%; height: 100vh; background: linear-gradient(#42f4a1, #4741f4);'>" +
+			"<div style='font-size: 20vw; text-align: center; width: 100%; margin: 0 auto; box-sizing: border-box;'>" +
+				"You Won!" +
+			"</div>" +
+			"<div style='text-align: center; width: 60%; font-size: 5vw; box-sizing: border-box; margin: 0 auto;'>" +
+				"You successfully matched all the cards in " + Math.round(clickCount/2) + " tries" +
+			"</div>" +
+			"<div style='width: 100%; text-align: center;'>" +
+				"That was your first attempt!" +
+			"</div>" +
+			"<div style='box-sizing: border-box; width: 50%; margin: 0 auto; text-align: center;'>" +
+				"<button onclick='putBack()' style='width: 200px; height: 100px; font-size: 40px'>" +
+					"Restart" +
+				"</button>" +
+			"</div>" +
+			"</div>");
+		}
+		previousAttempts.push(Math.round(clickCount/2));
 	}
 	console.log("clickedCards", clickedCards);
 }
@@ -152,21 +176,40 @@ function check(){
 	}
 }
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-function reload(){
-	location.reload();
+function putBack(){
+	idList.length = 0;
+	usedCards.length = 0;
+	cardValues.length = 0;
+	clickedCards.length = 0;
+	correctCards.length = 0;
+	gridGen = false;
+	let body = document.getElementsByTagName("body");
+	body[0].innerHTML = ("<h1 style='font-size: 20px; color: grey; text-align: center;'>" +
+		"Please enter the number of squares you want. Remember your number must be divisible by 2" +
+	"</h1>" +
+	"<div id='formContent'>" +
+		"<form id='amountForm'>" +
+			"<input id='amount' placeholder='Enter how many cards youd like' type='number'>" +
+		"</form>" +
+		"<button onclick='generateGrid()' id='submit' style='display: inline;'>" +
+			"Generate Grid" +
+		"</button>" +
+	"</div>" +
+	"<table id='cardGrid' style='width: 100%;'>" + "</table>");
 }
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-function storeCookie(){
+/*function storeCookie(){
 	document.cookie = "lastAttempt=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;"
 	document.cookie = "lastAttempt=" + String(clickCount/2) + "; path=/;";
-}
+}*/
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-function getLatestCookie(){
+/*function getLatestCookie(){
 	let previousAttempts = document.cookie;
 	console.log(previousAttempts);
 	let priorAttempt = previousAttempts.split("=")[1];
 	return priorAttempt;
-}
+}*/
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /*function addElement(parentId, elementTag, elementId, html){
 	var p = document.getElementById(parentId);
 	var newElement = document.createElement(elementId);
@@ -174,7 +217,7 @@ function getLatestCookie(){
 	newElement.innerHTML = html;
 	p.appendChild(newElement);
 }
-
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 function removeElement(elementClass){
 	var length = document.getElementsByClassName(elementClass).length;
 	var i = length-1;
